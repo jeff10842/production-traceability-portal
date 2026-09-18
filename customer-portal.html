@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Portal｜大亞電線電纜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1B2A38;
+    --navy-light:#28394A;
+    --copper:#C56611;
+    --copper-light:#C97A47;
+    --bg:#F5F6F7;
+    --card:#FFFFFF;
+    --slate:#5B6B78;
+    --slate-light:#8B98A3;
+    --line:#E3E6E9;
+    --green:#00C100;
+    --amber:#FFA600;
+    --red:#FF3719;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:Arial,'Space Grotesk',-apple-system,sans-serif;
+    background:var(--bg);
+    color:var(--navy);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ============ Login Screen ============ */
+  #loginScreen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 55%, var(--copper) 150%);
+  }
+  .login-card{
+    background:#fff;
+    width:100%;
+    max-width:400px;
+    padding:40px 36px 32px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.25);
+  }
+  .login-brand{text-align:center;margin-bottom:28px;}
+  .login-brand .co{font-size:14px;font-weight:700;letter-spacing:1px;color:var(--navy);}
+  .login-brand .portal{font-size:22px;font-weight:700;color:var(--copper);margin-top:4px;}
+  .login-field{margin-bottom:16px;}
+  .login-field label{display:block;font-size:12.5px;color:var(--slate);margin-bottom:6px;font-weight:600;}
+  .login-field input{
+    width:100%;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    font-size:14px;
+    font-family:inherit;
+    color:var(--navy);
+  }
+  .login-field input:focus{outline:none;border-color:var(--copper-light);}
+  .login-options{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:12.5px;color:var(--slate);margin:14px 0 22px;
+  }
+  .login-options label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+  .login-options a{color:var(--copper);text-decoration:none;}
+  .login-btn{
+    width:100%;
+    padding:13px;
+    background:var(--copper);
+    border:none;
+    color:#fff;
+    font-size:14.5px;
+    font-weight:600;
+    font-family:'Space Grotesk',sans-serif;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .login-btn:hover{background:var(--copper-light);}
+  .login-hint{
+    margin-top:18px;text-align:center;font-size:11.5px;color:var(--slate-light);line-height:1.6;
+  }
+  .login-error{
+    background:#FFEAE6;border:1px solid #FFC7BC;color:#B3220E;
+    font-size:12.5px;padding:9px 12px;margin-bottom:14px;
+  }
+  .demo-accounts{
+    margin-top:22px;padding-top:16px;border-top:1px dashed var(--line);
+  }
+  .demo-accounts .da-title{
+    font-size:11px;color:var(--slate-light);font-weight:700;letter-spacing:.5px;margin-bottom:8px;
+  }
+  .demo-accounts .da-row{
+    font-size:11.5px;color:var(--slate);line-height:1.9;
+  }
+  .demo-accounts code{
+    background:#F0F1F2;padding:1px 5px;font-family:'Courier New',monospace;color:var(--navy);
+  }
+
+  /* ============ Portal Screen ============ */
+  #portalScreen{display:none;min-height:100vh;}
+
+  .portal-header{
+    background:var(--navy);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 32px;
+    height:80px;
+    border-bottom:3px solid var(--copper);
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .portal-brand{display:flex;align-items:center;gap:14px;line-height:1.2;}
+  .portal-brand img{flex-shrink:0;width:50px;height:50px;object-fit:contain;}
+  .portal-brand-text{line-height:1.2;}
+  .portal-brand .co{font-size:12.5px;letter-spacing:.5px;color:#AEB9C2;}
+  .portal-brand .title{font-size:18px;font-weight:700;margin-top:1px;}
+  .portal-user{display:flex;align-items:center;gap:14px;font-size:13px;}
+  .portal-user .who{text-align:right;line-height:1.4;}
+  .portal-user .who .company{font-weight:600;}
+  .portal-user .who .dept{color:#AEB9C2;font-size:12px;}
+  .preview-tag{
+    background:var(--copper);
+    color:#fff;
+    font-size:11px;
+    font-weight:600;
+    padding:4px 10px;
+    letter-spacing:.3px;
+  }
+  .logout-btn{
+    background:transparent;
+    border:1px solid #4A5C6C;
+    color:#D8DEE3;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:12.5px;
+    padding:7px 14px;
+    cursor:pointer;
+  }
+  .logout-btn:hover{border-color:#8B98A3;color:#fff;}
+
+  .portal-nav{
+    display:flex;
+    background:#fff;
+    border-bottom:1px solid var(--line);
+    padding:0 32px;
+    overflow-x:auto;
+  }
+  .nav-item{
+    padding:14px 18px;
+    font-size:13.5px;
+    color:var(--slate);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+    transition:color .15s ease;
+  }
+  .nav-item.active{color:var(--navy);border-bottom-color:var(--copper);font-weight:600;}
+  .nav-item:not(.active):hover{color:var(--navy);}
+
+  .portal-body{max-width:1080px;margin:0 auto;padding:32px 28px 60px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .view-head{margin-bottom:24px;}
+  .view-head h1{font-size:22px;margin:0 0 6px;font-weight:700;}
+  .view-head p{margin:0;font-size:13.5px;color:var(--slate);}
+
+  /* KPI cards */
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+  .kpi-card{background:var(--card);border:1px solid var(--line);padding:20px;}
+  .kpi-card .n{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;color:var(--navy);}
+  .kpi-card .l{font-size:12.5px;color:var(--slate);margin-top:4px;}
+  .kpi-card.warn .n{color:var(--red);}
+
+  .section-title{font-size:15px;font-weight:700;margin:0 0 14px;color:var(--navy);}
+
+  /* Order cards (dashboard recent + my orders list) */
+  .order-card{
+    background:var(--card);border:1px solid var(--line);
+    padding:20px 22px;margin-bottom:14px;
+    display:flex;flex-wrap:wrap;gap:20px;align-items:center;
+  }
+  .order-card .oc-main{flex:1;min-width:220px;}
+  .order-card .oc-id{font-family:Arial,sans-serif;font-weight:700;font-size:15px;color:var(--navy);}
+  .order-card .oc-spec{font-size:13px;color:var(--text);margin-top:4px;line-height:1.5;}
+  .order-card .oc-project{font-size:12px;color:var(--slate);margin-top:4px;}
+  .oc-field{min-width:100px;}
+  .oc-field .fl{font-size:11px;color:var(--slate-light);margin-bottom:3px;}
+  .oc-field .fv{font-size:14px;font-weight:600;color:var(--navy);font-family:Arial,sans-serif;}
+  .status-pill{
+    display:inline-block;padding:4px 12px;font-size:12px;font-weight:600;
+  }
+  .status-pill.st-1{background:#EEF0F2;color:var(--slate);}
+  .status-pill.st-2,.status-pill.st-3,.status-pill.st-4{background:#FFF3E0;color:var(--amber);}
+  .status-pill.st-5{background:#E7F9E7;color:#1E9E1E;}
+  .status-pill.st-delayed{background:#FFEAE6;color:var(--red);}
+  .oc-btn{
+    font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;
+    padding:10px 20px;background:var(--navy);color:#fff;border:none;cursor:pointer;
+    white-space:nowrap;
+  }
+  .oc-btn:hover{background:var(--navy-light);}
+
+  .mini-ring{width:52px;height:52px;flex-shrink:0;}
+  .mini-ring text{font-family:Arial,sans-serif;font-weight:700;fill:#1A1A1A;}
+
+  /* Order Detail */
+  .detail-back{
+    font-size:13px;color:var(--copper);cursor:pointer;margin-bottom:18px;display:inline-block;
+  }
+  .detail-back:hover{text-decoration:underline;}
+  .detail-card{background:var(--card);border:1px solid var(--line);padding:28px 30px;margin-bottom:24px;}
+  .detail-card h2{font-size:17px;margin:0 0 20px;}
+  .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 24px;}
+  .summary-item .sl{font-size:11.5px;color:var(--slate);margin-bottom:5px;}
+  .summary-item .sv{font-size:15px;font-weight:600;color:var(--navy);line-height:1.5;}
+  .delay-banner{
+    background:#FFEAE6;border:1px solid #FFC7BC;color:#B3220E;
+    padding:12px 16px;font-size:13px;font-weight:600;margin-bottom:20px;
+  }
+
+  /* Progress tracker (customer-facing) */
+  .progress-card{background:var(--card);border:1px solid var(--line);padding:28px 30px;}
+  .progress-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
+  .progress-top .pt-label{font-size:13px;color:var(--slate);}
+  .progress-top .pt-value{font-size:24px;font-weight:700;color:var(--navy);font-family:'Space Grotesk',sans-serif;}
+  .progress-bar-track{width:100%;height:10px;background:var(--line);margin-bottom:36px;overflow:hidden;}
+  .progress-bar-fill{height:100%;background:var(--amber);transition:width 1s ease-out;}
+  .progress-bar-fill.done{background:var(--green);}
+  .progress-bar-fill.delayed{background:var(--red);}
+
+  .cf-track{display:flex;align-items:flex-start;}
+  .cf-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;}
+  .cf-node-wrap{position:relative;width:100%;height:80px;display:flex;align-items:center;justify-content:center;}
+  .cf-line{position:absolute;top:50%;left:50%;width:100%;height:3px;background:var(--line);transform:translateY(-50%);z-index:0;}
+  .cf-line.done{background:var(--green);}
+  .cf-step:last-child .cf-line{display:none;}
+  .cf-node{
+    width:56px;height:56px;border-radius:50%;background:#fff;border:3px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--slate-light);
+    position:relative;z-index:1;
+  }
+  .cf-node.done{border-color:var(--green);color:var(--green);}
+  .cf-node.current{border-color:var(--amber);color:var(--amber);width:68px;height:68px;box-shadow:0 0 0 6px rgba(255,166,0,0.15);}
+  .cf-node.current.delayed{border-color:var(--red);color:var(--red);box-shadow:0 0 0 6px rgba(255,55,25,0.15);}
+  .cf-name{font-size:13px;margin-top:12px;font-weight:600;color:var(--navy);text-align:center;}
+
+  .process-note{
+    margin-top:28px;padding-top:20px;border-top:1px solid var(--line);
+    display:flex;gap:40px;flex-wrap:wrap;
+  }
+  .process-note .pn-item .pl{font-size:11.5px;color:var(--slate);margin-bottom:4px;}
+  .process-note .pn-item .pv{font-size:15px;font-weight:600;color:var(--navy);}
+
+  .placeholder-view{
+    background:var(--card);border:1px dashed var(--slate-light);
+    padding:60px 24px;text-align:center;color:var(--slate);
+  }
+  .placeholder-view .pv-title{font-size:15px;font-weight:600;color:var(--navy);margin-bottom:6px;}
+
+  @media (max-width:820px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .summary-grid{grid-template-columns:repeat(2,1fr);}
+    .cf-name{font-size:11px;}
+    .cf-node{width:44px;height:44px;font-size:16px;}
+    .cf-node.current{width:56px;height:56px;}
+    .order-card{flex-direction:column;align-items:stretch;}
+    .oc-btn{width:100%;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ Login Screen ============ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="co">TA YA ELECTRIC WIRE &amp; CABLE</div>
+      <div class="portal">Customer Portal</div>
+    </div>
+    <form id="loginForm">
+      <div class="login-field">
+        <label>帳號</label>
+        <input type="text" id="loginUser" placeholder="請輸入帳號" autocomplete="username">
+      </div>
+      <div class="login-field">
+        <label>密碼</label>
+        <input type="password" id="loginPass" placeholder="請輸入密碼" autocomplete="current-password">
+      </div>
+      <div class="login-options">
+        <label><input type="checkbox" checked> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+      <div class="login-error" id="loginError" style="display:none;"></div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <div class="demo-accounts">
+      <div class="da-title">Demo Accounts</div>
+      <div class="da-row">台灣電力公司：<code>taipower</code> / <code>0000</code></div>
+      <div class="da-row">中鼎工程：<code>ctci</code> / <code>0000</code></div>
+      <div class="da-row">中華電信：<code>cht</code> / <code>0000</code></div>
+      <div class="da-row">漢唐：<code>uisco</code> / <code>0000</code></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Portal Screen ============ -->
+<div id="portalScreen">
+
+  <div class="portal-header">
+    <div class="portal-brand">
+      <img src="data:image/png;base64,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" alt="大亞集團 Logo">
+      <div class="portal-brand-text">
+        <div class="co">TA YA ELECTRIC WIRE &amp; CABLE</div>
+        <div class="title">Customer Portal</div>
+      </div>
+    </div>
+    <div class="portal-user">
+      <div class="who">
+        <div class="company" id="userCompany">—</div>
+        <div class="dept" id="userDept">—</div>
+      </div>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div class="portal-nav">
+    <div class="nav-item active" data-view="dashboard">Dashboard</div>
+    <div class="nav-item" data-view="myorders">我的訂單</div>
+    <div class="nav-item" data-view="progress">生產進度</div>
+    <div class="nav-item" data-view="docs">文件中心</div>
+    <div class="nav-item" data-view="shipping">出貨資訊</div>
+    <div class="nav-item" data-view="account">帳號管理</div>
+  </div>
+
+  <div class="portal-body">
+
+    <!-- Dashboard -->
+    <div class="view active" id="view-dashboard">
+      <div class="view-head">
+        <h1>訂單總覽</h1>
+        <p>查看您的訂單、生產進度及預計交貨資訊</p>
+      </div>
+      <div class="kpi-grid" id="dashboardKpi"></div>
+      <div class="section-title">近期訂單</div>
+      <div id="dashboardOrders"></div>
+    </div>
+
+    <!-- My Orders -->
+    <div class="view" id="view-myorders">
+      <div class="view-head">
+        <h1>我的訂單</h1>
+        <p>查看您名下所有訂單的規格、數量與交期資訊</p>
+      </div>
+      <div id="myOrdersList"></div>
+    </div>
+
+    <!-- Production Progress (all orders overview) -->
+    <div class="view" id="view-progress">
+      <div class="view-head">
+        <h1>生產進度</h1>
+        <p>追蹤每一筆訂單目前所在的生產階段</p>
+      </div>
+      <div id="progressList"></div>
+    </div>
+
+    <!-- Order Detail -->
+    <div class="view" id="view-detail">
+      <span class="detail-back" id="detailBackBtn">‹ 返回我的訂單</span>
+      <div class="view-head">
+        <h1 id="detailTitle">您的訂單：</h1>
+      </div>
+
+      <div class="detail-card">
+        <h2>訂單摘要</h2>
+        <div id="detailDelayBanner"></div>
+        <div class="summary-grid" id="detailSummary"></div>
+      </div>
+
+      <div class="progress-card" id="detailProgressCard"></div>
+    </div>
+
+    <!-- Placeholders -->
+    <div class="view" id="view-docs">
+      <div class="view-head"><h1>文件中心</h1><p>查看與此帳號相關的文件與憑證</p></div>
+      <div class="placeholder-view">
+        <div class="pv-title">此功能尚未建置</div>
+        <div>未來將提供出貨證明、材質證明書、檢驗報告等文件下載</div>
+      </div>
+    </div>
+    <div class="view" id="view-shipping">
+      <div class="view-head"><h1>出貨資訊</h1><p>查看物流與到貨相關資訊</p></div>
+      <div class="placeholder-view">
+        <div class="pv-title">此功能尚未建置</div>
+        <div>未來將提供物流追蹤、簽收記錄等資訊</div>
+      </div>
+    </div>
+    <div class="view" id="view-account">
+      <div class="view-head"><h1>帳號管理</h1><p>管理您的帳號與聯絡資訊</p></div>
+      <div class="placeholder-view">
+        <div class="pv-title">此功能尚未建置</div>
+        <div>未來將提供帳號權限、聯絡人與通知設定管理</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Data layer — Customer Portal is intentionally decoupled
+   from the Internal MES DOM. It renders purely from a data
+   structure (ordersData), sourced either from localStorage
+   (written by the MES page, simulating a future shared
+   API / integration layer) or from this bundled fallback
+   copy of the mock data if none is available.
+   ========================================================= */
+
+// DEMO ONLY
+// Production environment must use backend API + database.
+// Do not store authentication credentials in localStorage.
+const MES_ORDERS_STORAGE_KEY = 'traceabilityOrders';
+
+// DEMO ONLY
+// Production authentication must be handled by backend / IAM.
+const customerUsers = [
+  { username:"taipower", password:"0000", customerId:"CUST001", customer:"台灣電力公司", department:"南區施工處", name:"經理" },
+  { username:"ctci",     password:"0000", customerId:"CUST002", customer:"中鼎工程",     department:"採購部",     name:"經理" },
+  { username:"cht",      password:"0000", customerId:"CUST003", customer:"中華電信",     department:"第一採購駐點", name:"經理" },
+  { username:"uisco",    password:"0000", customerId:"CUST004", customer:"漢唐",         department:"採購部",     name:"經理" }
+];
+
+let currentUser = null;
+
+const fallbackOrders = [
+  {
+    id:"SI0483920", customerId:"CUST004", customer:"漢唐",
+    product:"600V 250mm2x1c<br>交連PE電力電纜",
+    quantity:"20,000", projectName:"台積電 AP_P_",
+    stage:5, percent:100, delayed:false,
+    processType:"600V", processIndex:4,
+    eta:"2025-09-16", estimatedDelivery:"2025-09-16"
+  },
+  {
+    id:"SI0271655", customerId:"CUST002", customer:"中鼎工程",
+    product:"161KV 2000mm2x1C<br>交連PE電力電纜",
+    quantity:"500,000", projectName:"台中電廠",
+    stage:2, percent:45, delayed:false,
+    processType:"345KV", processIndex:4,
+    eta:"2025-10-30", estimatedDelivery:"2025-10-30"
+  },
+  {
+    id:"SI0958147", customerId:"CUST001", customer:"台灣電力公司",
+    product:"345KV 2500mm2x1C<br>交連PE電力電纜",
+    quantity:"1,800", projectName:"雄積三.四路",
+    stage:2, percent:40, delayed:true,
+    processType:"345KV", processIndex:7,
+    eta:"2025-08-30", estimatedDelivery:"2025-09-27"
+  },
+  {
+    id:"SI0672941", customerId:"CUST003", customer:"中華電信",
+    product:"0.4dB 96C-BJF-RR-NM-BSM<br>束管型充膠單模光纜",
+    quantity:"8,000", projectName:"XXXX",
+    stage:2, percent:45, delayed:false,
+    processType:"通信電纜", processIndex:2,
+    eta:"2025-11-15", estimatedDelivery:"2025-11-15"
+  }
+];
+
+const processSteps = {
+  "600V": ["導體抽線","導體絞合","絕緣押出","產品裝軸、釘封板"],
+  "345KV": ["導體抽線","導體絞合","導體包帶","絕緣三層押出","纏繞不織布與鍍錫銅線遮蔽","包鋼紮帶與積層鋁帶","外被覆押出","成品裝軸、釘封板"],
+  "通信電纜": ["光纖上色排線","束管製造","披覆押出","成品裝軸、釘封板"]
+};
+
+const customerStageLabels = ["訂單確認","生產中","檢驗中","包裝中","已出貨"];
+const cfStageNames = ["訂單確認","生產","檢驗","包裝","出貨"];
+
+function loadOrders(){
+  try{
+    const raw = localStorage.getItem(MES_ORDERS_STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(Array.isArray(parsed) && parsed.length) return parsed;
+    }
+  }catch(e){ /* fall through to bundled copy */ }
+  return fallbackOrders;
+}
+
+let ordersData = loadOrders();
+
+// Customer-level data isolation: always filter by customerId before
+// any rendering happens. Nothing downstream ever sees orders[] directly.
+function getCurrentCustomerOrders(){
+  if(!currentUser) return [];
+  return ordersData.filter(o => o.customerId === currentUser.customerId);
+}
+
+// Order Detail access control — an order is only returned if it both
+// exists AND belongs to the currently logged-in customer.
+function getAuthorizedOrder(orderId){
+  if(!currentUser) return null;
+  return ordersData.find(o => o.id === orderId && o.customerId === currentUser.customerId) || null;
+}
+
+// Live cross-tab sync: if the MES tab is open at the same time and
+// writes an update, refresh this portal's view automatically.
+window.addEventListener('storage', (e)=>{
+  if(e.key === MES_ORDERS_STORAGE_KEY){
+    ordersData = loadOrders();
+    if(currentUser) renderAll();
+  }
+});
+
+/* ============ Rendering helpers ============ */
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  return iso.replaceAll('-', '/');
+}
+
+function ringSvg(order, size){
+  size = size || 52;
+  const r = 15.5, c = 2*Math.PI*r;
+  const pct = order.percent;
+  const dash = (pct/100)*c;
+  let color = order.delayed ? '#FF3719' : (order.stage===5 ? '#00C100' : '#FFA600');
+  return `<svg class="mini-ring" width="${size}" height="${size}" viewBox="0 0 42 42">
+    <circle cx="21" cy="21" r="${r}" fill="none" stroke="#E3E6E9" stroke-width="4"/>
+    <circle cx="21" cy="21" r="${r}" fill="none" stroke="${color}" stroke-width="4"
+      stroke-linecap="round" stroke-dasharray="${dash.toFixed(1)} ${c.toFixed(1)}"
+      transform="rotate(-90 21 21)"/>
+    <text x="21" y="25" text-anchor="middle" font-size="10">${pct}%</text>
+  </svg>`;
+}
+
+function statusPillHtml(order){
+  if(order.orderStatus === 'pending_acceptance'){
+    return `<span class="status-pill st-1">訂單確認中</span>`;
+  }
+  const cls = order.delayed ? 'st-delayed' : `st-${order.stage}`;
+  const text = order.delayed ? '交期可能延遲' : customerStageLabels[order.stage-1];
+  return `<span class="status-pill ${cls}">${text}</span>`;
+}
+
+function orderCardHtml(order, opts){
+  opts = opts || {};
+  return `
+    <div class="order-card">
+      ${ringSvg(order)}
+      <div class="oc-main">
+        <div class="oc-id">${order.id}</div>
+        <div class="oc-spec">${order.product}</div>
+        <div class="oc-project">案名：${order.projectName}　｜　數量：${order.quantity} m</div>
+      </div>
+      <div class="oc-field">
+        <div class="fl">狀態</div>
+        <div class="fv">${statusPillHtml(order)}</div>
+      </div>
+      <div class="oc-field">
+        <div class="fl">需求日期</div>
+        <div class="fv">${fmtDate(order.eta)}</div>
+      </div>
+      <div class="oc-field">
+        <div class="fl">預計交期</div>
+        <div class="fv">${fmtDate(order.estimatedDelivery)}</div>
+      </div>
+      <button class="oc-btn" data-order="${order.id}">查看詳情</button>
+    </div>`;
+}
+
+function renderCustomerHeader(){
+  if(!currentUser) return;
+  document.getElementById('userCompany').textContent = currentUser.customer;
+  document.getElementById('userDept').textContent = currentUser.department + '｜' + currentUser.name;
+}
+
+function renderDashboard(){
+  const mine = getCurrentCustomerOrders();
+  const inProgress = mine.filter(o=>o.stage<5).length;
+  const readyToShip = mine.filter(o=>o.stage===4).length;
+  const completed = mine.filter(o=>o.stage===5).length;
+  const delayed = mine.filter(o=>o.delayed).length;
+
+  document.getElementById('dashboardKpi').innerHTML = `
+    <div class="kpi-card"><div class="n">${inProgress}</div><div class="l">進行中訂單</div></div>
+    <div class="kpi-card"><div class="n">${readyToShip}</div><div class="l">準備出貨</div></div>
+    <div class="kpi-card"><div class="n">${completed}</div><div class="l">已完成訂單</div></div>
+    <div class="kpi-card ${delayed>0?'warn':''}"><div class="n">${delayed}</div><div class="l">可能延遲</div></div>
+  `;
+
+  document.getElementById('dashboardOrders').innerHTML =
+    mine.length ? mine.map(o=>orderCardHtml(o)).join('') : `<p style="color:var(--slate);font-size:13.5px;">目前沒有訂單資料。</p>`;
+}
+
+function renderMyOrders(){
+  const mine = getCurrentCustomerOrders();
+  document.getElementById('myOrdersList').innerHTML =
+    mine.length ? mine.map(o=>orderCardHtml(o)).join('') : `<p style="color:var(--slate);font-size:13.5px;">目前沒有訂單資料。</p>`;
+}
+
+function cfTrackerHtml(order){
+  if(order.orderStatus === 'pending_acceptance'){
+    let html = '<div class="cf-track">';
+    for(let i=1;i<=5;i++){
+      const isFirst = i===1;
+      const nodeClass = isFirst ? 'current' : '';
+      const content = isFirst ? '●' : i;
+      const label = isFirst ? '訂單確認中' : cfStageNames[i-1];
+      html += `<div class="cf-step">
+        <div class="cf-node-wrap">
+          <div class="cf-line"></div>
+          <div class="cf-node ${nodeClass}">${content}</div>
+        </div>
+        <div class="cf-name">${label}</div>
+      </div>`;
+    }
+    html += '</div>';
+    return html;
+  }
+
+  let html = '<div class="cf-track">';
+  for(let i=1;i<=5;i++){
+    // Immediately after acceptance (stage 1), node 1 is done ("✓ 訂單已確認")
+    // and nothing else is current yet — production hasn't started.
+    const done = i < order.stage || (order.stage === 1 && i === 1);
+    const current = (order.stage !== 1) && i === order.stage;
+    let nodeClass = '';
+    let content = i;
+    let label = i===1 && done ? '訂單已確認' : cfStageNames[i-1];
+    if(done){ nodeClass='done'; content='✓'; }
+    if(current){
+      nodeClass = order.delayed ? 'current delayed' : 'current';
+      content = '●';
+    }
+    html += `<div class="cf-step">
+      <div class="cf-node-wrap">
+        <div class="cf-line ${done?'done':''}"></div>
+        <div class="cf-node ${nodeClass}">${content}</div>
+      </div>
+      <div class="cf-name">${label}</div>
+    </div>`;
+  }
+  html += '</div>';
+  return html;
+}
+
+function progressCardHtml(order){
+  const barClass = order.delayed ? 'delayed' : (order.stage===5 ? 'done' : '');
+  let currentProcessHtml = '';
+  if(order.stage===2 || order.stage===3 || order.stage===4){
+    const steps = processSteps[order.processType] || [];
+    const stepName = steps[order.processIndex-1] || '—';
+    currentProcessHtml = `
+      <div class="pn-item">
+        <div class="pl">目前製程</div>
+        <div class="pv">${stepName}</div>
+      </div>`;
+  }
+  return `
+    <div class="progress-top">
+      <span class="pt-label">目前進度</span>
+      <span class="pt-value">${order.percent}%</span>
+    </div>
+    <div class="progress-bar-track"><div class="progress-bar-fill ${barClass}" style="width:0%" data-target="${order.percent}"></div></div>
+    ${cfTrackerHtml(order)}
+    <div class="process-note">
+      ${currentProcessHtml}
+      <div class="pn-item">
+        <div class="pl">需求日期</div>
+        <div class="pv">${fmtDate(order.eta)}</div>
+      </div>
+      <div class="pn-item">
+        <div class="pl">預計交期</div>
+        <div class="pv">${fmtDate(order.estimatedDelivery)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderProgressList(){
+  const mine = getCurrentCustomerOrders();
+  const container = document.getElementById('progressList');
+  container.innerHTML = mine.map(o => `
+    <div class="detail-card">
+      <h2>${o.id}　${o.projectName}</h2>
+      ${o.delayed ? `<div class="delay-banner">⚠ 交期可能延遲</div>` : ''}
+      ${progressCardHtml(o)}
+    </div>
+  `).join('');
+  animateBars(container);
+}
+
+function animateBars(scope){
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      scope.querySelectorAll('.progress-bar-fill').forEach(el=>{
+        el.style.width = el.dataset.target + '%';
+      });
+    });
+  });
+}
+
+function renderOrderDetail(order){
+  document.getElementById('detailTitle').textContent = '您的訂單：' + order.id;
+
+  document.getElementById('detailDelayBanner').innerHTML =
+    order.delayed ? `<div class="delay-banner">⚠ 交期可能延遲</div>` : '';
+
+  document.getElementById('detailSummary').innerHTML = `
+    <div class="summary-item"><div class="sl">產品規格</div><div class="sv">${order.product}</div></div>
+    <div class="summary-item"><div class="sl">數量</div><div class="sv">${order.quantity} m</div></div>
+    <div class="summary-item"><div class="sl">狀態</div><div class="sv">${statusPillHtml(order)}</div></div>
+    <div class="summary-item"><div class="sl">需求日期</div><div class="sv">${fmtDate(order.eta)}</div></div>
+    <div class="summary-item"><div class="sl">預計交期</div><div class="sv">${fmtDate(order.estimatedDelivery)}</div></div>
+    <div class="summary-item"><div class="sl">案名</div><div class="sv">${order.projectName}</div></div>
+  `;
+
+  document.getElementById('detailProgressCard').innerHTML = progressCardHtml(order);
+  animateBars(document.getElementById('detailProgressCard'));
+}
+
+function renderOrderDetailDenied(){
+  document.getElementById('detailTitle').textContent = '您的訂單';
+  document.getElementById('detailDelayBanner').innerHTML = '';
+  document.getElementById('detailSummary').innerHTML =
+    `<p style="color:#B3220E;font-size:14px;grid-column:1/-1;">無法存取此訂單。</p>`;
+  document.getElementById('detailProgressCard').innerHTML = '';
+}
+
+function openOrderDetail(orderId){
+  // Authorization check happens here — an order belonging to another
+  // customer will never be returned, regardless of how orderId was obtained.
+  const order = getAuthorizedOrder(orderId);
+
+  if(!order){
+    currentOrderId = null;
+    renderOrderDetailDenied();
+    switchView('detail');
+    return;
+  }
+
+  currentOrderId = orderId;
+  renderOrderDetail(order);
+  switchView('detail');
+}
+
+function renderAll(){
+  renderCustomerHeader();
+  renderDashboard();
+  renderMyOrders();
+  renderProgressList();
+}
+
+/* ============ View switching ============ */
+
+function switchView(name){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const el = document.getElementById('view-'+name);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.view===name);
+  });
+  if(name !== 'detail') currentOrderId = null;
+  savePortalState(name);
+}
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click', ()=>switchView(item.dataset.view));
+});
+
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.oc-btn');
+  if(btn) openOrderDetail(btn.dataset.order);
+});
+
+document.getElementById('detailBackBtn').addEventListener('click', ()=>switchView('myorders'));
+
+/* ============ Login / Session Persistence ============ */
+// DEMO ONLY — session persistence stores only non-sensitive identity
+// fields (customerId, company, department, name). The password is
+// NEVER written to localStorage, sessionStorage, a cookie, or anywhere
+// else client-side.
+// Production authentication must be handled by backend / IAM, issuing
+// a real access token instead of this demo's local session flag.
+//
+// sessionStorage (not localStorage) is used deliberately here: it
+// persists across a refresh of THIS tab, but a newly opened tab/window
+// gets its own empty sessionStorage — so opening a fresh tab always
+// requires logging in again, while refreshing an already-open tab does not.
+
+const PORTAL_STATE_KEY = 'taya_portal_state';
+let currentOrderId = null;
+
+function savePortalState(view){
+  if(!currentUser) return;
+  try{
+    sessionStorage.setItem(PORTAL_STATE_KEY, JSON.stringify({
+      loggedIn:true,
+      customerId: currentUser.customerId,
+      customer: currentUser.customer,
+      department: currentUser.department,
+      name: currentUser.name,
+      view,
+      orderId: currentOrderId
+    }));
+  }catch(e){ /* sessionStorage unavailable — session just won't persist across refresh */ }
+}
+
+function enterPortal(){
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('portalScreen').style.display = 'block';
+  ordersData = loadOrders();
+  renderAll();
+}
+
+// Validates credentials against the demo account list and, on success,
+// sets currentUser and enters the portal. Returns true/false so the
+// submit handler can show an inline error without using alert().
+function login(username, password){
+  const user = customerUsers.find(u => u.username === username && u.password === password);
+  if(!user) return false;
+  currentUser = user;
+  currentOrderId = null;
+  enterPortal();
+  switchView('dashboard');
+  return true;
+}
+
+function logout(){
+  currentUser = null;
+  currentOrderId = null;
+  // Clear any rendered data from the previous customer immediately,
+  // so switching accounts can never flash the prior customer's screen.
+  document.getElementById('dashboardKpi').innerHTML = '';
+  document.getElementById('dashboardOrders').innerHTML = '';
+  document.getElementById('myOrdersList').innerHTML = '';
+  document.getElementById('progressList').innerHTML = '';
+  document.getElementById('detailSummary').innerHTML = '';
+  document.getElementById('detailProgressCard').innerHTML = '';
+  document.getElementById('userCompany').textContent = '—';
+  document.getElementById('userDept').textContent = '—';
+
+  document.getElementById('portalScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginForm').reset();
+  document.getElementById('loginError').style.display = 'none';
+
+  try{ sessionStorage.removeItem(PORTAL_STATE_KEY); }catch(e){}
+}
+
+function restoreSession(){
+  try{
+    const raw = sessionStorage.getItem(PORTAL_STATE_KEY);
+    if(raw){
+      const state = JSON.parse(raw);
+      if(state && state.loggedIn && state.customerId){
+        // Re-hydrate currentUser from the saved (non-sensitive) session
+        // fields — never from a stored password.
+        currentUser = {
+          customerId: state.customerId,
+          customer: state.customer,
+          department: state.department,
+          name: state.name
+        };
+        enterPortal();
+        if(state.view === 'detail' && state.orderId){
+          openOrderDetail(state.orderId);
+        } else {
+          switchView(state.view || 'dashboard');
+        }
+        return true;
+      }
+    }
+  }catch(e){ /* ignore, fall back to login screen */ }
+  return false;
+}
+
+document.getElementById('loginForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  const errorEl = document.getElementById('loginError');
+
+  const success = login(username, password);
+
+  if(!success){
+    errorEl.textContent = '帳號或密碼錯誤，請重新輸入。';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  errorEl.style.display = 'none';
+
+  // Deep link support: customer-portal.html?order=SI0271655
+  const params = new URLSearchParams(window.location.search);
+  const orderParam = params.get('order');
+  if(orderParam){
+    openOrderDetail(orderParam);
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', logout);
+
+restoreSession();
+</script>
+
+</body>
+</html>
